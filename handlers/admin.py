@@ -90,7 +90,7 @@ async def load_price(message: Message, state: FSMContext):
         await state.finish()
 
 
-@dp.callback_query_handlers(lambda x: x.data and x.data.startswith('del '))
+# @dp.callback_query_handlers(lambda x: x.data and x.data.startswith('del '))
 async def del_callback_run(callback_query: CallbackQuery):
     await sqlite_db.sql_delete_command(callback_query.data.replace('del ', ''))
     await callback_query.answer(text=f'{callback_query.data.replace("del ", "")} удалена.', show_alert=True)
@@ -106,7 +106,6 @@ async def delete_item(message: Message):
                                    add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'del {ret[1]}')))
 
 
-
 # Регистрируем хендлеры
 def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(cm_start, commands=['Загрузить'], state=None)
@@ -116,4 +115,5 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_description, state=FSMAdmin.description)
     dp.register_message_handler(load_price, state=FSMAdmin.price)
+    dp.register_callback_query_handler(del_callback_run, lambda x: x.data and x.data.startswith('del '))
     dp.register_message_handler(make_changes_command, commands=['moderator'], is_chat_admin=True)
